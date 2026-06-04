@@ -1,0 +1,63 @@
+# Universal Communication Agent — modality libraries.
+#
+# The comms tools (mcp_servers/comms_server.py) lazily import every library here
+# INSIDE the tool call, so a missing or half-installed lib never crashes the
+# server: the tool just returns an actionable "pip install ..." message. That
+# means you can install this file in tiers. The always-available core
+# (modality identification, information theory, protocol discovery over the
+# built-in codec library) needs nothing beyond numpy, which is already in
+# requirements.txt.
+#
+# Install everything (heavy — pulls deep-learning stacks):
+#     pip install -r requirements-comms.txt
+#
+# ---------------------------------------------------------------------------
+# Tier 1 — light, pure/near-pure Python. Safe to install everywhere (CPU-only).
+# ---------------------------------------------------------------------------
+
+# Optical/RF physical-layer DSP: digital modulation, FEC (convolutional codes +
+# Viterbi), filter design. Powers comm_signal. Pure-Python on top of scipy.
+scikit-dsp-comm
+
+# Communications building blocks (modulation, channel coding) — comm_signal.
+scikit-commpy
+
+# Discrete information theory: a precision upgrade for comm_infotheory's
+# entropy / mutual-information / channel-capacity estimates. The core ships a
+# pure-numpy implementation, so this is optional sharpening, not a requirement.
+dit
+
+# ---------------------------------------------------------------------------
+# Tier 2 — heavy ML (large download; GPU strongly recommended, CPU works but is
+# slow). Enables real language + cross-modal decoding.
+# ---------------------------------------------------------------------------
+
+# Cross-language communication for comm_language: load SeamlessM4T
+# (facebook/seamless-m4t-v2-large, speech+text across ~100 languages) or
+# NLLB-200 (facebook/nllb-200-distilled-600M, text across 200 languages).
+# Also backs comm_bioacoustic via EarthSpeciesProject/NatureLM-audio.
+transformers
+sentencepiece
+
+# ---------------------------------------------------------------------------
+# Tier 3 — very heavy / GPU- or platform-specific. Left COMMENTED so a CPU-only
+# Docker build is never broken by accident. Uncomment to enable that modality.
+# ---------------------------------------------------------------------------
+
+# Cross-modal (any-to-any) embeddings for comm_embed — one space binding
+# image/text/audio (Meta ImageBind). Pulls a large torch stack.
+# git+https://github.com/facebookresearch/ImageBind.git
+
+# GPU-accelerated optical/RF link-level simulation (NVIDIA Sionna). Pulls
+# TensorFlow or PyTorch; GPU mandatory for realistic workloads.
+# sionna
+
+# Quantum communication channel simulation for comm_quantum (BB84/teleportation
+# QBER & fidelity). Pick one:
+# squanch
+# qunetsim
+
+# Emergent-communication / multi-agent RL — lets comm_discover's invent mode
+# train agents to evolve a shared protocol from scratch (Milestone 3). Pulls a
+# torch stack. Reference: facebookresearch/EGG.
+# egg
