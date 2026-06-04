@@ -481,51 +481,6 @@ chat_handler      = components["chat_handler"]
 model_discovery   = components["model_discovery"]
 skills_manager    = components["skills_manager"]
 
-# Seed the Universal Communication Agent persona (idempotent — skipped if the
-# user has already created, edited, or deleted it).
-try:
-    skills_manager.ensure_seed_skill(
-        "universal-communication",
-        description=("Specialist for establishing communication across any modality "
-                     "(text, cipher, binary, optical/RF, quantum, bioacoustic) and "
-                     "inventing a new method when no known one works."),
-        category="communication",
-        status="published",
-        source="imported",
-        confidence=0.9,
-        tags=["communication", "decoding", "information-theory", "signals"],
-        when_to_use=("The user asks to decode an unknown signal, establish "
-                     "communication with some source/counterparty, work out what "
-                     "something is transmitting, or find a way to talk to X."),
-        procedure=[
-            "Call comm_identify_modality on the signal to get its information-"
-            "theoretic profile (entropy, redundancy, alphabet) and likely modality.",
-            "Try known decoders for that modality; for cross-language use "
-            "comm_language, for waveforms comm_signal, for quantum comm_quantum.",
-            "Measure every attempt with comm_infotheory (channel_established): a "
-            "channel is real only when normalized mutual information meets the "
-            "threshold — never claim success on a hunch.",
-            "If no known method establishes a channel, call comm_discover to run "
-            "the iterative loop that proposes, measures, and INVENTS a new method "
-            "until mutual information crosses the threshold or the budget is spent.",
-            "Report the recovered message, the method used, and the measured "
-            "mutual information / channel capacity.",
-        ],
-        pitfalls=[
-            "Do not declare a channel established without a comm_infotheory "
-            "measurement backing it.",
-            "Optional libraries (SeamlessM4T, ImageBind, quantum sims) may be "
-            "absent; the tools return enable-instructions — relay them or fall "
-            "back to the always-available core tools.",
-        ],
-        verification=[
-            "comm_infotheory channel_established reports established=true with "
-            "normalized_mutual_information >= threshold for the chosen method.",
-        ],
-    )
-except Exception:
-    pass
-
 # TTS
 from services.tts import get_tts_service
 
@@ -599,10 +554,6 @@ app.include_router(setup_chat_routes(
 # Research (background deep-research tasks)
 from routes.research_routes import setup_research_routes
 app.include_router(setup_research_routes(research_handler, session_manager=session_manager))
-
-# Universal Communication Agent (modality identification, info-theory, protocol discovery)
-from routes.comms_routes import setup_comms_routes
-app.include_router(setup_comms_routes(session_manager=session_manager))
 
 # History
 from routes.history_routes import setup_history_routes

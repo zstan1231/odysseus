@@ -381,23 +381,6 @@ class SkillsManager:
 
         return sk.to_dict()
 
-    def ensure_seed_skill(self, name: str, **add_kwargs) -> bool:
-        """Idempotently seed a bundled skill. Returns True if it was created.
-
-        Safe to call on every startup: if a skill with this slug already
-        exists (in any category, any owner), nothing happens — so a user who
-        edits or deletes the seed skill won't see it resurrected.
-        """
-        slug = slugify(name)
-        try:
-            if any(s.get("name") == slug for s in self.load_all()):
-                return False
-        except Exception:
-            return False
-        add_kwargs.setdefault("name", slug)
-        self.add_skill(**add_kwargs)
-        return True
-
     def update_skill(self, skill_id: str, updates: Dict, owner: Optional[str] = None) -> bool:
         """`skill_id` is the slug name. Allows updating any field plus
         renames if `name` changes (file is moved on disk).
